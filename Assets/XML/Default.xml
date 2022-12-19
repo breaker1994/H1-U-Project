@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<places>
+   <place name="Racoon City" id="1">
+        <item type="quest" dialogueid="1">Сходить за мукой для отца</item>
+        <item type="quest" dialogueid="2">Сходить за сахаром для отца</item>
+   </place>
+</places>
