@@ -79,9 +79,9 @@ public class GameButtons : MonoBehaviour {
                     Panel_Hero.SetActive(false);
                     break;
                 case 3:
-                    Panel_Targets.transform.GetChild(0).gameObject.GetComponent<CreateTargetList>().ClearTargetList();
-                    Button_Tab_Targets.interactable = true;
-                    Panel_Targets.SetActive(false);
+                    //Panel_Targets.transform.GetChild(0).gameObject.GetComponent<CreateTargetList>().ClearTargetList();
+                    //Button_Tab_Targets.interactable = true;
+                    //Panel_Targets.SetActive(false);
                     break;
                 case 4:
                     Button_Tab_Settings.interactable = true;
@@ -107,7 +107,7 @@ public class GameButtons : MonoBehaviour {
                 Debug.Log("ENTER TARGETS");
                 Button_Tab_Targets.interactable = false;
                 Panel_Targets.SetActive(true);
-                Panel_Targets.transform.GetChild(0).gameObject.GetComponent<CreateTargetList>().AddItem();
+                //Panel_Targets.transform.GetChild(0).gameObject.GetComponent<CreateTargetList>().AddItem();
                 break;
             case 4:
                 Debug.Log("ENTER SETTINGS");
