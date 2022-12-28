@@ -38,7 +38,7 @@ public class MenuButtons : MonoBehaviour
 
     public void StartCampaign()
     {
-        SceneManager.LoadScene("create hero");
+        SceneManager.LoadScene("Game");
     }
 
     public void ExitApp()
