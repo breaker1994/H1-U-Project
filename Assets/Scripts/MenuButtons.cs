@@ -1,11 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using EasyUI.Toast;
 
 public class MenuButtons : MonoBehaviour
 {
     public GameObject Panel_Menu;
     public GameObject Panel_LevelSelect;
     public GameObject Panel_Settings;
+
+    private int backClick = 0;
 
     void Start()
     {
@@ -41,21 +46,35 @@ public class MenuButtons : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-    public void ExitApp()
-    {
-        Application.Quit();
-    }
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if(Panel_Menu.activeSelf)
             {
-                Application.Quit();
+                ++backClick;
+                if(backClick == 1)
+                {
+                    Debug.Log("Double Click");
+                    Toast.Show("Press again to exit", 1f);
+                }
+
+                StartCoroutine(ClickTime());
+
+                if (backClick > 1)
+                {
+                    #if UNITY_EDITOR
+                    EditorApplication.isPlaying = false;
+                    #else
+                    Application.Quit ();
+                    #endif
+                }
             }
             else
             {
+                StopAllCoroutines();
+                backClick = 0;
+
                 if (Panel_Settings.activeSelf)
                 {
                     Panel_Settings.SetActive(false);
@@ -67,5 +86,11 @@ public class MenuButtons : MonoBehaviour
                 Panel_Menu.SetActive(true);
             }
         }
+    }
+
+    IEnumerator ClickTime()
+    {
+        yield return new WaitForSeconds(0.5f);
+        backClick = 0;
     }
 }
