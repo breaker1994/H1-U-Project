@@ -39,7 +39,8 @@ public class GameController : MonoBehaviour
     {
         SceneManager.LoadScene("Main");
     }
-    void OnEnable()
+
+    /*void OnEnable()
     {
         SceneManager.sceneLoaded += OnLevelFinishedLoading;
     }
@@ -53,7 +54,5 @@ public class GameController : MonoBehaviour
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Level Loaded " + scene.name + " " + mode);
-
-        //showImage();
-    }
+    }*/
 }
