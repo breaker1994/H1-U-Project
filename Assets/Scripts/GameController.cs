@@ -1,7 +1,39 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
+    public GameObject GameUX;
+    public GameObject BackgroundBlock;
+
+    public static bool imageIsShowed = false;
+
+    public void showImage()
+    {
+        if (imageIsShowed)
+        {
+            return;
+        }
+
+        imageIsShowed = true;
+        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
+
+        GameUX.SetActive(false);
+        BackgroundBlockController.Play("Background Fade Out");
+    }
+
+    public void hideImage()
+    {
+        if (!imageIsShowed)
+        {
+            return;
+        }
+
+        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
+
+        BackgroundBlockController.Play("Background Fade In");
+
+    }
 
     public void ExitToMenu()
     {
@@ -20,6 +52,8 @@ public class GameController : MonoBehaviour {
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("Level Loaded "+ scene.name+" "+ mode);
+        Debug.Log("Level Loaded " + scene.name + " " + mode);
+
+        //showImage();
     }
 }

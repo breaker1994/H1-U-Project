@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using PixelCrushers.DialogueSystem.Extras;
 using UnityEngine.Events;
 
-public class ScrollContentEventsHandler : MonoBehaviour, IPointerClickHandler {
+public class ContentClickHandler : MonoBehaviour, IPointerClickHandler {
     public UnityEvent onClick = new UnityEvent();
 
     public void OnPointerClick(PointerEventData data)
