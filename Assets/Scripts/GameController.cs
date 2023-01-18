@@ -5,13 +5,13 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public GameObject GameUX;
-    public GameObject BackgroundBlock;
+
     public Animator allFadeAnimator;
-    public GameObject imageDialogueUI;
-    public CustomSMSDialogueUI defaultDialogueUI;
+    public Animator backgroundFadeAnimator;
 
     public static bool imageIsShowed = false;
     public static bool conversationIsChanging = false;
+
     private static string nextChapter = null;
 
     public void showImage()
@@ -22,10 +22,9 @@ public class GameController : MonoBehaviour
         }
 
         imageIsShowed = true;
-        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
 
         GameUX.SetActive(false);
-        BackgroundBlockController.Play("Background Fade Out");
+        backgroundFadeAnimator.Play("Background Fade Out");
     }
 
     public void hideImage()
@@ -35,9 +34,7 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
-
-        BackgroundBlockController.Play("Background Fade In");
+        backgroundFadeAnimator.Play("Background Fade In");
     }
 
     public void changeConversation()
