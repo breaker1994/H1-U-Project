@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using EasyUI.Toast;
+using UnityEngine.SceneManagement;
 
 public class MenuButtons : MonoBehaviour
 {
     public GameObject Panel_Menu;
     public GameObject Panel_LevelSelect;
     public GameObject Panel_Settings;
+    public Animator allFadeAnimator;
 
     private int backClick = 0;
 
@@ -17,6 +18,13 @@ public class MenuButtons : MonoBehaviour
         Panel_Menu.SetActive(true);
         Panel_LevelSelect.SetActive(false);
         Panel_Settings.SetActive(false);
+
+        allFadeAnimator.Play("Default");
+    }
+
+    public void AllIsFaded()
+    {
+        SceneManager.LoadScene("Game");
     }
 
     public void Enter_Settings()
@@ -43,7 +51,7 @@ public class MenuButtons : MonoBehaviour
 
     public void StartCampaign()
     {
-        SceneManager.LoadScene("Game");
+        allFadeAnimator.Play("All Fade In");
     }
 
     void Update()

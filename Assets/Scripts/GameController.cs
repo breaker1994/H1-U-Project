@@ -1,17 +1,19 @@
 ﻿using PixelCrushers.DialogueSystem;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
     public GameObject GameUX;
     public GameObject BackgroundBlock;
     public GameObject MainCanvasBlock;
-    //public GameObject ;
+    public GameObject ScreenAlpha;
+    public GameObject imageDialogueUI;
+    public CustomTextlineDialogueUI defaultDialogueUI;
 
     public static bool imageIsShowed = false;
+    public static bool conversationIsChanging = false;
+    private static string nextChapter = null;
 
     public void showImage()
     {
@@ -41,23 +43,43 @@ public class GameController : MonoBehaviour
 
     public void changeConversation()
     {
+        Debug.Log("changeConversation "+ DialogueManager.lastConversationEnded);
 
+        var conversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
+        string tags = DialogueLua.GetConversationField(conversation.id, "nextScene").asString;
+
+        nextChapter = tags;
+        allFadeIn();
     }
 
     public void allFadeIn()
     {
         Debug.Log("allFadeIn");
-        //DialogueManager.ResetDatabase();
 
-        //Animator MainCanvasBlockController = MainCanvasBlock.GetComponent<Animator>();
+        Animator MainCanvasBlockController = MainCanvasBlock.GetComponent<Animator>();
 
         //GameUX.SetActive(false);
-        //MainCanvasBlockController.Play("All Fade In");
+        MainCanvasBlockController.Play("All Fade In");
+    }
+
+    public void AllIsFaded()
+    {
+        if(nextChapter != null)
+        {
+            DialogueManager.StartConversation(nextChapter);
+            nextChapter = null;
+        }
+        showImage();
+        allFadeOut();
     }
 
     public void allFadeOut()
     {
-        
+        Debug.Log("allFadeOut");
+
+        Animator MainCanvasBlockController = MainCanvasBlock.GetComponent<Animator>();
+
+        MainCanvasBlockController.Play("All Fade Out");
     }
 
     public void ExitToMenu()
@@ -65,7 +87,7 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
-    /*void OnEnable()
+    void OnEnable()
     {
         SceneManager.sceneLoaded += OnLevelFinishedLoading;
     }
@@ -79,5 +101,6 @@ public class GameController : MonoBehaviour
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Level Loaded " + scene.name + " " + mode);
-    }*/
+        allFadeOut();
+    }
 }

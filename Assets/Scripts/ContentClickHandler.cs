@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using PixelCrushers.DialogueSystem.Extras;
 using UnityEngine.Events;
 
 public class ContentClickHandler : MonoBehaviour, IPointerClickHandler {
