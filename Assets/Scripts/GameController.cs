@@ -6,10 +6,9 @@ public class GameController : MonoBehaviour
 {
     public GameObject GameUX;
     public GameObject BackgroundBlock;
-    public GameObject MainCanvasBlock;
-    public GameObject ScreenAlpha;
+    public Animator allFadeAnimator;
     public GameObject imageDialogueUI;
-    public CustomTextlineDialogueUI defaultDialogueUI;
+    public CustomSMSDialogueUI defaultDialogueUI;
 
     public static bool imageIsShowed = false;
     public static bool conversationIsChanging = false;
@@ -56,10 +55,8 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("allFadeIn");
 
-        Animator MainCanvasBlockController = MainCanvasBlock.GetComponent<Animator>();
-
         //GameUX.SetActive(false);
-        MainCanvasBlockController.Play("All Fade In");
+        allFadeAnimator.Play("All Fade In");
     }
 
     public void AllIsFaded()
@@ -77,9 +74,7 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("allFadeOut");
 
-        Animator MainCanvasBlockController = MainCanvasBlock.GetComponent<Animator>();
-
-        MainCanvasBlockController.Play("All Fade Out");
+        allFadeAnimator.Play("All Fade Out");
     }
 
     public void ExitToMenu()
