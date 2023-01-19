@@ -64,7 +64,7 @@ public class MenuButtons : MonoBehaviour
                 if(backClick == 1)
                 {
                     Debug.Log("Double Click");
-                    Toast.Show("Press again to exit", 1f);
+                    Toast.Show("Нажмите еще раз для выхода", 1f);
                 }
 
                 StartCoroutine(ClickTime());
