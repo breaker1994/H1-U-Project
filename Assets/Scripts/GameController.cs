@@ -1,4 +1,5 @@
 ﻿using PixelCrushers.DialogueSystem;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,8 +12,6 @@ public class GameController : MonoBehaviour
 
     public static bool imageIsShowed = false;
     public static bool conversationIsChanging = false;
-
-    private static string nextChapter = null;
 
     public void showImage()
     {
@@ -39,12 +38,9 @@ public class GameController : MonoBehaviour
 
     public void changeConversation()
     {
-        Debug.Log("changeConversation "+ DialogueManager.lastConversationEnded);
+        Debug.Log("changeConversation from "+ DialogueManager.lastConversationEnded);
 
-        var conversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
-        string tags = DialogueLua.GetConversationField(conversation.id, "nextScene").asString;
-
-        nextChapter = tags;
+        conversationIsChanging = true;
         allFadeIn();
     }
 
@@ -52,18 +48,40 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("allFadeIn");
 
-        //GameUX.SetActive(false);
         allFadeAnimator.Play("All Fade In");
     }
 
     public void AllIsFaded()
     {
-        if(nextChapter != null)
+        Debug.Log("AllIsFaded");
+
+        if (conversationIsChanging)
         {
-            DialogueManager.StartConversation(nextChapter);
-            nextChapter = null;
+            conversationIsChanging = false;
+
+            Conversation oldConversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
+            string nextScene = DialogueLua.GetConversationField(oldConversation.id, "nextScene").asString;
+
+            Conversation newConversation = DialogueManager.masterDatabase.GetConversation(nextScene);
+
+            DialogueManager.StartConversation(nextScene);
+
+            Boolean isImage = DialogueLua.GetConversationField(newConversation.id, "isImage").asBool;
+
+            imageIsShowed = isImage;
+
+            if (isImage)
+            {
+                backgroundFadeAnimator.Play("Idle_NOFADE");
+            }
+            else
+            {
+                backgroundFadeAnimator.Play("Default");
+            }
+
+            Debug.Log("nextScene: " + nextScene + " isImage: " + isImage);
         }
-        showImage();
+
         allFadeOut();
     }
 
