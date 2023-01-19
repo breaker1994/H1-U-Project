@@ -10,7 +10,7 @@ public class AnimatorEventHandler : MonoBehaviour
     {
         Debug.Log("ImageFadeIn");
 
-        GameUX.SetActive(true);
+        //GameUX.SetActive(true);
         GameController.imageIsShowed = false;
     }
 

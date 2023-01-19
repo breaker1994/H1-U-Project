@@ -9,6 +9,5 @@ public class CustomSMSDialogueUI : SMSDialogueUI
         return (panelNumber == SubtitlePanelNumber.Default) 
             ? base.GetTemplate(subtitle)
             : conversationUIElements.subtitlePanels[PanelNumberUtility.GetSubtitlePanelIndex(panelNumber)];
-
     }
 }
