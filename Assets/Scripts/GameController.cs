@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject GameUX;
-
     public Animator allFadeAnimator;
     public Animator backgroundFadeAnimator;
 
@@ -22,7 +20,6 @@ public class GameController : MonoBehaviour
 
         imageIsShowed = true;
 
-        //GameUX.SetActive(false);
         backgroundFadeAnimator.Play("Background Fade Out");
     }
 
@@ -33,6 +30,11 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        backgroundFadeAnimator.Play("Background Fade In");
+    }
+
+    public void ImageIsFaded()
+    {
         if (conversationIsChanging)
         {
             conversationIsChanging = false;
@@ -45,7 +47,7 @@ public class GameController : MonoBehaviour
             DialogueManager.StartConversation(nextScene);
         }
 
-        backgroundFadeAnimator.Play("Background Fade In");
+        GameController.imageIsShowed = false;
     }
 
     public void allFadeIn()

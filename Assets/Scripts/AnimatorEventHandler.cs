@@ -3,15 +3,14 @@ using UnityEngine.Events;
 
 public class AnimatorEventHandler : MonoBehaviour
 {
-    public GameObject GameUX;
     public UnityEvent onFade = new UnityEvent();
+    public UnityEvent onImageFade = new UnityEvent();
 
     public void ImageFadeIn()
     {
         Debug.Log("ImageFadeIn");
 
-        //GameUX.SetActive(true);
-        GameController.imageIsShowed = false;
+        onImageFade.Invoke();
     }
 
     public void BackgroundFadeIn()
