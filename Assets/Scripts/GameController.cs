@@ -1,12 +1,15 @@
-﻿using UnityEngine;
+﻿using PixelCrushers.DialogueSystem;
+using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject GameUX;
-    public GameObject BackgroundBlock;
+    public Animator allFadeAnimator;
+    public Animator backgroundFadeAnimator;
 
     public static bool imageIsShowed = false;
+    public static bool conversationIsChanging = false;
 
     public void showImage()
     {
@@ -16,10 +19,8 @@ public class GameController : MonoBehaviour
         }
 
         imageIsShowed = true;
-        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
 
-        GameUX.SetActive(false);
-        BackgroundBlockController.Play("Background Fade Out");
+        backgroundFadeAnimator.Play("Background Fade Out");
     }
 
     public void hideImage()
@@ -29,10 +30,57 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        Animator BackgroundBlockController = BackgroundBlock.GetComponent<Animator>();
+        backgroundFadeAnimator.Play("Background Fade In");
+    }
 
-        BackgroundBlockController.Play("Background Fade In");
+    public void ImageIsFaded()
+    {
+        if (conversationIsChanging)
+        {
+            conversationIsChanging = false;
 
+            Conversation oldConversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
+            string nextScene = DialogueLua.GetConversationField(oldConversation.id, "nextScene").asString;
+
+            Conversation newConversation = DialogueManager.masterDatabase.GetConversation(nextScene);
+
+            DialogueManager.StartConversation(nextScene);
+        }
+
+        GameController.imageIsShowed = false;
+    }
+
+    public void allFadeIn()
+    {
+        Debug.Log("allFadeIn");
+
+        allFadeAnimator.Play("All Fade In");
+    }
+
+    public void AllIsFaded()
+    {
+        Debug.Log("AllIsFaded");
+
+        if (conversationIsChanging)
+        {
+            conversationIsChanging = false;
+
+            Conversation oldConversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
+            string nextScene = DialogueLua.GetConversationField(oldConversation.id, "nextScene").asString;
+
+            Conversation newConversation = DialogueManager.masterDatabase.GetConversation(nextScene);
+
+            DialogueManager.StartConversation(nextScene);
+        }
+
+        allFadeOut();
+    }
+
+    public void allFadeOut()
+    {
+        Debug.Log("allFadeOut");
+
+        allFadeAnimator.Play("All Fade Out");
     }
 
     public void ExitToMenu()
@@ -40,7 +88,7 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
-    /*void OnEnable()
+    void OnEnable()
     {
         SceneManager.sceneLoaded += OnLevelFinishedLoading;
     }
@@ -54,5 +102,45 @@ public class GameController : MonoBehaviour
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Level Loaded " + scene.name + " " + mode);
-    }*/
-}
+
+        allFadeOut();
+    }
+
+    public void OnConversationStart()
+    {
+        Debug.Log("OnConversationStart " + DialogueManager.lastConversationStarted);
+
+        Conversation newConversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationStarted);
+
+        Boolean isImage = DialogueLua.GetConversationField(newConversation.id, "isImage").asBool;
+
+        imageIsShowed = isImage;
+
+        if (isImage)
+        {
+            backgroundFadeAnimator.Play("Idle_NOFADE");
+        }
+        else
+        {
+            backgroundFadeAnimator.Play("Default");
+        }
+    }
+    public void OnConversationEnd()
+    {
+        Conversation oldConversation = DialogueManager.masterDatabase.GetConversation(DialogueManager.lastConversationEnded);
+        Boolean needAllFade = DialogueLua.GetConversationField(oldConversation.id, "needAllFade").asBool;
+
+        Debug.Log("OnConversationEnd: " + oldConversation.ToString() + " needAllFade:" + needAllFade);
+
+        conversationIsChanging = true;
+
+        if(needAllFade)
+        {
+            allFadeIn();
+        }
+        else
+        {
+            hideImage();
+        }
+    }
+}   

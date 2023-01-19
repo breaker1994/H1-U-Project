@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using PixelCrushers.DialogueSystem.Extras;
 using UnityEngine.Events;
 
 public class ContentClickHandler : MonoBehaviour, IPointerClickHandler {
@@ -8,7 +7,13 @@ public class ContentClickHandler : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData data)
     {
+        if (GameController.conversationIsChanging)
+        {
+            return;
+        }
+
         Debug.Log("Scroll OnPointerClick " + this.name);
+
         onClick.Invoke();
     }
 }
