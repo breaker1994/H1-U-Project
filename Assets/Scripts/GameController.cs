@@ -2,11 +2,14 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
     public Animator allFadeAnimator;
     public Animator backgroundFadeAnimator;
+
+    public GameObject backgroundImage;
 
     public static bool imageIsShowed = false;
     public static bool conversationIsChanging = false;
@@ -119,6 +122,19 @@ public class GameController : MonoBehaviour
         if (isImage)
         {
             backgroundFadeAnimator.Play("Idle_NOFADE");
+            string imageString = DialogueLua.GetConversationField(newConversation.id, "imageFile").asString;
+            Sprite backgroundSprite = Resources.Load<Sprite>("Images/"+imageString);
+
+            float realWidth = backgroundSprite.rect.width;
+            float realHeight = backgroundSprite.rect.height;
+            float aspectRatio = (float)Math.Round(realWidth / realHeight, 1);
+
+            Debug.Log("imageString " + imageString);
+            Debug.Log("backgroundSprite " + backgroundSprite);
+            Debug.Log("realWidth: " + realWidth+ " realHeight: " + realHeight+ " aspectRatio: "+ aspectRatio);
+
+            backgroundImage.GetComponent<Image>().sprite = backgroundSprite;
+            backgroundImage.GetComponent<AspectRatioFitter>().aspectRatio = aspectRatio;
         }
         else
         {
