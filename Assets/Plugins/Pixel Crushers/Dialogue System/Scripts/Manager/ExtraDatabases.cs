@@ -209,7 +209,7 @@ namespace PixelCrushers.DialogueSystem
 
         protected virtual IEnumerator StartEndOfFrame()
         {
-            yield return new WaitForEndOfFrame();
+            yield return CoroutineUtility.endOfFrame;
             if (addTrigger == DialogueTriggerEvent.OnStart) TryAddDatabases(null, onePerFrame);
             if (removeTrigger == DialogueTriggerEvent.OnStart) TryRemoveDatabases(null, onePerFrame);
         }

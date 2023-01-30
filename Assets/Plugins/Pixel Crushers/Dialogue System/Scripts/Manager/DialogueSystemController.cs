@@ -19,6 +19,8 @@ namespace PixelCrushers.DialogueSystem
 
     public delegate void AssetLoadedDelegate(UnityEngine.Object asset);
 
+    public delegate string GetLocalizedTextDelegate(string s);
+
     /// <summary>
     /// This component ties together the elements of the Dialogue System: dialogue database, 
     /// dialogue UI, sequencer, and conversation controller. You will typically add this to a
@@ -132,6 +134,11 @@ namespace PixelCrushers.DialogueSystem
         /// Raised when a conversation ends. Parameter is primary actor.
         /// </summary>
         public event TransformDelegate conversationEnded = delegate { };
+
+        /// <summary>
+        /// Assign to replace the Dialogue System's built-in GetLocalizedText().
+        /// </summary>
+        public GetLocalizedTextDelegate overrideGetLocalizedText = null;
 
         /// <summary>
         /// Raised when the Dialogue System has completely initialized, including
@@ -1017,6 +1024,7 @@ namespace PixelCrushers.DialogueSystem
                 var sequencer = GetNewSequencer();
                 sequencer.keepCameraPositionOnClose = displaySettings.cameraSettings.keepCameraPositionAtConversationEnd;
                 var view = this.gameObject.AddComponent<ConversationView>();
+                sequencer.conversationView = view;
                 view.Initialize(dialogueUI, sequencer, displaySettings, OnDialogueEntrySpoken);
                 view.SetPCPortrait(model.GetPCSprite(), model.GetPCName());
                 m_conversationController.Initialize(model, view, displaySettings.inputSettings.alwaysForceResponseMenu, OnEndConversation);
@@ -1688,10 +1696,13 @@ namespace PixelCrushers.DialogueSystem
         /// Gets localized text.
         /// </summary>
         /// <returns>If the specified field exists in the text tables, returns the field's 
-        /// localized text for the current language. Otherwise returns the field itself.</returns>
+        /// localized text for the current language. Otherwise returns the field itself. 
+        /// If overrideGetLocalizedText is assigned, uses that instead.</returns>
         /// <param name="s">The field to look up.</param>
         public string GetLocalizedText(string s)
         {
+            if (overrideGetLocalizedText != null) return overrideGetLocalizedText(s);
+
             string localizedText;
             // Try the Dialogue Manager's text table first:
             var textTable = displaySettings.localizationSettings.textTable;
@@ -2057,7 +2068,7 @@ namespace PixelCrushers.DialogueSystem
             Lua.RegisterFunction("GetEntryText", null, SymbolExtensions.GetMethodInfo(() => GetEntryText((double)0, string.Empty)));
             Lua.RegisterFunction("GetEntryBool", null, SymbolExtensions.GetMethodInfo(() => GetEntryBool((double)0, string.Empty)));
             Lua.RegisterFunction("GetEntryNumber", null, SymbolExtensions.GetMethodInfo(() => GetEntryNumber((double)0, string.Empty)));
-            Lua.RegisterFunction("Conditional", null, SymbolExtensions.GetMethodInfo(() => Conditional(string.Empty, string.Empty)));
+            Lua.RegisterFunction("Conditional", null, SymbolExtensions.GetMethodInfo(() => Conditional(false, string.Empty)));
             Lua.RegisterFunction("ChangeActorName", this, SymbolExtensions.GetMethodInfo(() => ChangeActorName(string.Empty, string.Empty)));
             // Register DialogueLua in case they got unregistered:
             DialogueLua.RegisterLuaFunctions();
@@ -2121,9 +2132,9 @@ namespace PixelCrushers.DialogueSystem
             if (conversationController != null) conversationController.randomizeNextEntry = true;
         }
 
-        public static string Conditional(string condition, string value)
+        public static string Conditional(bool condition, string value)
         {
-            return Lua.IsTrue(condition) ? value : string.Empty;
+            return condition ? value : string.Empty;
         }
 
         /// <summary>

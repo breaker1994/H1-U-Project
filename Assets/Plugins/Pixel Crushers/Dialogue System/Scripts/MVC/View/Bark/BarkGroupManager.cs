@@ -124,11 +124,30 @@ namespace PixelCrushers.DialogueSystem
         }
 
         /// <summary>
+        /// Hides all bark members' bark UIs and clears any queued barks.
+        /// </summary>
+        public void CancelAllBarks()
+        {
+            foreach (var queue in queues.Values)
+            {
+                queue.Clear();
+            }
+            foreach (var group in groups.Values)
+            {
+                foreach (var member in group)
+                {
+                    if (member != null) member.CancelBark();
+                }
+            }
+        }
+
+        /// <summary>
         /// Hides other members' barks if they're playing.
+        /// Pass null to hide all members' barks.
         /// </summary>
         public void MutexBark(string groupId, BarkGroupMember member)
         {
-            if (string.IsNullOrEmpty(groupId) || member == null) return;
+            if (string.IsNullOrEmpty(groupId)) return;
             if (!groups.ContainsKey(groupId)) return;
             foreach (var other in groups[groupId])
             {

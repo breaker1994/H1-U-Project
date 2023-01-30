@@ -96,6 +96,7 @@ namespace PixelCrushers.DialogueSystem
         public override void OnRestartGame()
         {
             DialogueManager.ResetDatabase();
+            DialogueManager.SendUpdateTracker();
         }
 
     }

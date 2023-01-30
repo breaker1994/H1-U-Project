@@ -969,11 +969,13 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         private void DrawUnityEvents()
         {
             // Draw scene-independent OnExecute() event:
+            if (database == null) return;
             EditorGUILayout.LabelField(new GUIContent("Scene-Independent Event", "This UnityEvent cannot point to scene objects. It can point to assets and prefabs."), EditorStyles.boldLabel);
             if (serializedObject == null)
             {
-                EditorGUILayout.LabelField("Error displaying UnityEvent. Please report to developer.");
-                return;
+                serializedObject = new SerializedObject(database);
+                //EditorGUILayout.LabelField("Error displaying UnityEvent. Please report to developer.");
+                //return;
             }
             if (serializedObjectCurrentEntry != currentEntry)
             {

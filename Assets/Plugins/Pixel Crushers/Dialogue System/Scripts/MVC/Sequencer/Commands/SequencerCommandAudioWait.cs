@@ -20,8 +20,9 @@ namespace PixelCrushers.DialogueSystem.SequencerCommands
         protected AudioClip currentClip = null;
         protected AudioClip originalClip = null;
         protected bool restoreOriginalClip = false; // Don't restore; could stop next entry's AudioWait that runs same frame.
+        protected bool playedAudio = false;
 
-        public IEnumerator Start()
+        public virtual IEnumerator Start()
         {
             audioClipName = GetParameter(0);
             Transform subject = GetSubject(1);
@@ -48,7 +49,7 @@ namespace PixelCrushers.DialogueSystem.SequencerCommands
             return SequencerTools.GetAudioSource(subject);
         }
 
-        private void TryAudioClip(string audioClipName)
+        protected virtual void TryAudioClip(string audioClipName)
         {
             try
             {
@@ -90,6 +91,7 @@ namespace PixelCrushers.DialogueSystem.SequencerCommands
                                     audioSource.clip = audioClip;
                                     audioSource.Play();
                                 }
+                                playedAudio = true;
                                 stopTime = DialogueTime.time + audioClip.length;
                             }
                         });
@@ -102,7 +104,7 @@ namespace PixelCrushers.DialogueSystem.SequencerCommands
             }
         }
 
-        public void Update()
+        public virtual void Update()
         {
             if (DialogueTime.time >= stopTime)
             {
@@ -123,19 +125,19 @@ namespace PixelCrushers.DialogueSystem.SequencerCommands
             }
         }
 
-        public void OnDialogueSystemPause()
+        public virtual void OnDialogueSystemPause()
         {
             if (audioSource == null) return;
             audioSource.Pause();
         }
 
-        public void OnDialogueSystemUnpause()
+        public virtual void OnDialogueSystemUnpause()
         {
             if (audioSource == null) return;
             audioSource.Play();
         }
 
-        public void OnDestroy()
+        public virtual void OnDestroy()
         {
             if (audioSource != null)
             {

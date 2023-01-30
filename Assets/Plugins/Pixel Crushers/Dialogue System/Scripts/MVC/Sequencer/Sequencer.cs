@@ -76,6 +76,12 @@ namespace PixelCrushers.DialogueSystem
             get { return m_listener; }
         }
 
+        public ConversationView conversationView
+        {
+            get { return m_conversationView; }
+            set { m_conversationView = value; }
+        }
+
         /// <summary>
         /// Original camera position at start of conversation. At the end of
         /// the conversation, the camera is restored back to this position.
@@ -191,6 +197,8 @@ namespace PixelCrushers.DialogueSystem
         private Transform m_speaker = null;
 
         private Transform m_listener = null;
+
+        private ConversationView m_conversationView = null;
 
         private List<QueuedSequencerCommand> m_queuedCommands = new List<QueuedSequencerCommand>();
 
@@ -586,7 +594,7 @@ namespace PixelCrushers.DialogueSystem
             {
                 foreach (string message in queuedMessages)
                 {
-                    OnSequencerMessage(message);
+                    Message(message);
                 }
                 queuedMessages.Clear();
                 if ((m_queuedCommands.Count == 0) && (m_activeCommands.Count == 0) && m_delayTimeLeft <= 0)
@@ -935,7 +943,7 @@ namespace PixelCrushers.DialogueSystem
         {
             yield return StartCoroutine(DialogueTime.WaitForSeconds(delay));
             if (m_timedMessageCoroutines.ContainsKey(guid)) m_timedMessageCoroutines.Remove(guid);
-            OnSequencerMessage(endMessage);
+            Message(endMessage);
         }
 
         private void ActivateCommand(QueuedSequencerCommand queuedCommand)
@@ -1211,7 +1219,7 @@ namespace PixelCrushers.DialogueSystem
             }
             else if (string.Equals(commandName, "Continue"))
             {
-                return HandleContinueInternally();
+                return HandleContinueInternally(args);
             }
             else if (string.Equals(commandName, "SetVariable"))
             {
@@ -2691,12 +2699,23 @@ namespace PixelCrushers.DialogueSystem
 
         /// <summary>
         /// Handles "Continue()", which simulates a continue button click.
+        /// If passed "all", continues all active conversations.
         /// </summary>
         /// <returns></returns>
-        private bool HandleContinueInternally()
+        private bool HandleContinueInternally(string[] args)
         {
-            if (DialogueDebug.logInfo) Debug.Log(string.Format("{0}: Sequencer: Continue()", new System.Object[] { DialogueDebug.Prefix }));
-            DialogueManager.instance.BroadcastMessage("OnConversationContinueAll", SendMessageOptions.DontRequireReceiver);
+            var all = conversationView == null ||
+                (args != null && args.Length >= 1 && string.Equals("all", args[0], StringComparison.OrdinalIgnoreCase));
+            if (all)
+            {
+                if (DialogueDebug.logInfo) Debug.Log(string.Format("{0}: Sequencer: Continue(all)", new System.Object[] { DialogueDebug.Prefix }));
+                DialogueManager.instance.BroadcastMessage(DialogueSystemMessages.OnConversationContinueAll, SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                if (DialogueDebug.logInfo) Debug.Log(string.Format("{0}: Sequencer: Continue()", new System.Object[] { DialogueDebug.Prefix }));
+                conversationView.HandleContinueButtonClick();
+            }
             return true;
         }
 

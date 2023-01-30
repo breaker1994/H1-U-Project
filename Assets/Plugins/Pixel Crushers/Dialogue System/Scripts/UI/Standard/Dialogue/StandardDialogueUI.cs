@@ -20,13 +20,16 @@ namespace PixelCrushers.DialogueSystem
         [Tooltip("Add an EventSystem if one isn't in the scene.")]
         public bool addEventSystemIfNeeded = true;
 
+        [Tooltip("Check in Awake if panels are properly assigned. Untick to suppress warnings.")]
+        public bool verifyPanelAssignments = true;
+
         #endregion
 
         #region Properties & Private Fields
 
         private Queue<QueuedUIAlert> m_alertQueue = new Queue<QueuedUIAlert>();
         private StandardUIRoot m_uiRoot = new StandardUIRoot();
-        private WaitForEndOfFrame endOfFrame = new WaitForEndOfFrame();
+        private WaitForEndOfFrame endOfFrame = CoroutineUtility.endOfFrame;
         public override AbstractUIRoot uiRootControls { get { return m_uiRoot; } }
         public override AbstractUIAlertControls alertControls { get { return alertUIElements; } }
         public override AbstractDialogueUIControls dialogueControls { get { return conversationUIElements; } }
@@ -58,7 +61,7 @@ namespace PixelCrushers.DialogueSystem
         private void VerifyAssignments()
         {
             if (addEventSystemIfNeeded) UITools.RequireEventSystem();
-            if (DialogueDebug.logWarnings)
+            if (DialogueDebug.logWarnings && verifyPanelAssignments)
             {
                 if (alertUIElements.alertText.gameObject == null) Debug.LogWarning("Dialogue System: No UI text element is assigned to Standard Dialogue UI's Alert UI Elements.", this);
                 if (conversationUIElements.subtitlePanels.Length == 0) Debug.LogWarning("Dialogue System: No subtitle panels are assigned to Standard Dialogue UI.", this);

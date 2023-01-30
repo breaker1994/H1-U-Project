@@ -110,6 +110,7 @@ namespace PixelCrushers.DialogueSystem
                 if (!string.IsNullOrEmpty(sequence)) sequence += ";\n";
                 sequence += queuedText;
                 queuedText = string.Empty;
+                GUI.changed = true;
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -133,8 +134,6 @@ namespace PixelCrushers.DialogueSystem
                 sequence = ApplyMenuResult(menuResult, sequence);
                 menuResult = MenuResult.Unselected;
             }
-
-            //EditorWindowTools.StartIndentedSection(); // Removed indent; looks better without.
 
             SetSyntaxStateGUIColor(syntaxState);
 
@@ -235,8 +234,6 @@ namespace PixelCrushers.DialogueSystem
 
             // If content changed, reset syntax check state:
             if (EditorGUI.EndChangeCheck()) syntaxState = SequenceSyntaxState.Unchecked;
-
-            //EditorWindowTools.EndIndentedSection();
 
             return sequence;
         }

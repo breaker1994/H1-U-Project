@@ -72,6 +72,7 @@ namespace PixelCrushers.DialogueSystem
                         entries.RemoveAt(0);
                         entries.Add(lastEntry);
                     }
+                    index = 0;
                 }
                 return (0 <= index && index < entries.Count) ? entries[index++] : 0;
                 //---Was: return entries[Random.Range(0, numEntries);

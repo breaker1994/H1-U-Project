@@ -164,7 +164,7 @@ namespace PixelCrushers.DialogueSystem
         /// The title of the bark conversation. Used if barkSource is set to conversation.
         /// </summary>
         [Tooltip("Conversation to get bark content from.")]
-        [ConversationPopup(false)]
+        [ConversationPopup(false, true)]
         public string barkConversation = string.Empty;
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace PixelCrushers.DialogueSystem
         /// The title of the conversation to start.
         /// </summary>
         [Tooltip("Conversation to start. Leave blank for no conversation.")]
-        [ConversationPopup(false)]
+        [ConversationPopup(false, true)]
         public string conversation = string.Empty;
 
         /// <summary>
@@ -589,7 +589,7 @@ namespace PixelCrushers.DialogueSystem
             if (!enabled) return;
             if (stopConversationOnTriggerExit &&
                 DialogueManager.isConversationActive &&
-                (Time.time > earliestTimeToAllowTriggerExit) &&
+                (GetCurrentDialogueTime() > earliestTimeToAllowTriggerExit) &&
                 ((DialogueManager.currentActor == otherTransform) || (DialogueManager.currentConversant == otherTransform)))
             {
                 if (DialogueDebug.logInfo) Debug.Log("Dialogue System: Stopping conversation because " + otherTransform + " exited trigger area.", this);
@@ -667,7 +667,7 @@ namespace PixelCrushers.DialogueSystem
             // start immediately instead of waiting for end of frame.
             if (Time.frameCount > 1)
             {
-                yield return new WaitForEndOfFrame();
+                yield return CoroutineUtility.endOfFrame;
             }
             TryStart(null);
         }
@@ -1000,13 +1000,18 @@ namespace PixelCrushers.DialogueSystem
 
                     DialogueManager.StartConversation(conversation, actorTransform, conversantTransform, entryID);
                     activeConversation = DialogueManager.instance.activeConversation;
-                    earliestTimeToAllowTriggerExit = Time.time + MarginToAllowTriggerExit;
+                    earliestTimeToAllowTriggerExit = GetCurrentDialogueTime() + MarginToAllowTriggerExit;
                     if (stopConversationIfTooFar)
                     {
                         monitorDistanceCoroutine = StartCoroutine(MonitorDistance(DialogueManager.currentActor));
                     }
                 }
             }
+        }
+
+        private float GetCurrentDialogueTime()
+        {
+            return DialogueTime.mode == DialogueTime.TimeMode.Gameplay ? Time.time : Time.realtimeSinceStartup;
         }
 
         private int GetEntryIDFromTitle(string conversation, string entryTitle)

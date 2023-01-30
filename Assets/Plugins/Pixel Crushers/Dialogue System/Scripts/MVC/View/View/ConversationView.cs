@@ -392,7 +392,7 @@ namespace PixelCrushers.DialogueSystem
             HandleContinueButtonClick();
         }
 
-        private void HandleContinueButtonClick()
+        public void HandleContinueButtonClick()
         {
             // If we just started and another conversation just ended, ignore the continue:
             if (Time.frameCount == initialFrameCount && initialFrameCount == ConversationController.frameLastConversationEnded) return;

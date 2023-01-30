@@ -48,6 +48,9 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         private bool showFullTextOnHover = true;
 
         [SerializeField]
+        private bool showLinkOrderOnConnectors = true;
+
+        [SerializeField]
         private bool addNewNodesToRight = false;
 
         [SerializeField]
@@ -429,6 +432,17 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                         }
                         DrawLink(start, end, connectorColor, link.priority != ConditionPriority.Normal);
                         HandleConnectorEvents(link, start, end);
+                        if (showLinkOrderOnConnectors && entry.outgoingLinks.Count > 1)
+                        {
+                            Vector3 cross = Vector3.Cross((start - end).normalized, Vector3.forward);
+                            Vector3 diff = (end - start);
+                            Vector3 direction = diff.normalized;
+                            Vector3 mid = ((0.5f * diff) + start) - (0.5f * cross);
+                            Vector3 center = mid + direction;
+                            GUIContent content = new GUIContent(i.ToString());
+                            Vector2 size = EditorStyles.miniTextField.CalcSize(content);
+                            EditorGUI.LabelField(new Rect(center.x - 6, center.y - 28, size.x + 2, size.y + 2), (i + 1).ToString(), EditorStyles.miniTextField);
+                        }
                     }
                 }
                 else

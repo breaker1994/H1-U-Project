@@ -535,7 +535,7 @@ namespace PixelCrushers.DialogueSystem
 
         protected IEnumerator UpdateQuestDisplayAtEndOfFrame()
         {
-            yield return new WaitForEndOfFrame();
+            yield return CoroutineUtility.endOfFrame;
             refreshCoroutine = null;
             ShowQuests(currentQuestStateMask);
         }

@@ -216,6 +216,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 menu.AddItem(new GUIContent("Show/Show Actor Portraits"), showActorPortraits, ToggleShowActorPortraits);
                 menu.AddItem(new GUIContent("Show/Show Descriptions"), showDescriptions, ToggleShowDescriptions);
                 menu.AddItem(new GUIContent("Show/Show Full Text On Hover"), showFullTextOnHover, ToggleShowFullTextOnHover);
+                menu.AddItem(new GUIContent("Show/Show Link Order On Arrows"), showLinkOrderOnConnectors, () => { showLinkOrderOnConnectors = !showLinkOrderOnConnectors; });
                 menu.AddItem(new GUIContent("Show/Show End Node Markers"), showEndNodeMarkers, ToggleShowEndNodeMarkers);
                 menu.AddItem(new GUIContent("Show/Show Node IDs"), showNodeIDs, ToggleShowNodeIDs);
                 menu.AddItem(new GUIContent("Show/Show Titles Instead of Text"), showTitlesInsteadOfText, ToggleShowTitlesBeforeText);

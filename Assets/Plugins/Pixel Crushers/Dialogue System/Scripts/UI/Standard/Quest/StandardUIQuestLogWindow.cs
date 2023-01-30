@@ -208,7 +208,7 @@ namespace PixelCrushers.DialogueSystem
         {
             // Wait until end of frame so we only refresh once in case we receive multiple
             // requests to refresh during the same frame.
-            yield return new WaitForEndOfFrame();
+            yield return CoroutineUtility.endOfFrame;
             m_refreshCoroutine = null;
             OnQuestListUpdated();
         }

@@ -92,6 +92,8 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         [SerializeField]
         public static bool exportConversationsAfterEntries = false;
         [SerializeField]
+        public static bool exportConversationTitleSeparateColumn = false;
+        [SerializeField]
         public static bool omitNoneSequenceEntriesInScreenplay = false;
         [SerializeField]
         private EntrytagFormat entrytagFormat = EntrytagFormat.ActorName_ConversationID_EntryID;
@@ -641,6 +643,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 exportConversations = EditorGUILayout.Toggle("Export Conversations", exportConversations);
                 if (exportFormat == ExportFormat.ChatMapperXML) exportCanvasRect = EditorGUILayout.Toggle(new GUIContent("Export Canvas Positions", "Export the positions of dialogue entry nodes in the Dialogue Editor's canvas"), exportCanvasRect);
                 if (exportFormat == ExportFormat.CSV) exportConversationsAfterEntries = EditorGUILayout.Toggle(new GUIContent("Convs. After Entries", "Put the Conversations section after the DialogueEntries section in the CSV file. Normally the Conversations section is before."), exportConversationsAfterEntries);
+                if (exportFormat == ExportFormat.VoiceoverScript) exportConversationTitleSeparateColumn = EditorGUILayout.Toggle(new GUIContent("Conv. Title in Sep. Column", "Add a separate column for conversation IDs."), exportConversationTitleSeparateColumn);
                 entrytagFormat = (EntrytagFormat)EditorGUILayout.EnumPopup("Entrytag Format", entrytagFormat, GUILayout.Width(400));
             }
             if (exportFormat == ExportFormat.Screenplay)
@@ -788,7 +791,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 {
                     voiceoverExportPath = voiceoverExportPath.Replace("/", "\\");
                 }
-                VoiceoverScriptExporter.Export(database, voiceoverExportPath, exportActors, entrytagFormat, encodingType);
+                VoiceoverScriptExporter.Export(database, voiceoverExportPath, exportActors, exportConversationTitleSeparateColumn, entrytagFormat, encodingType);
                 EditorUtility.DisplayDialog("Export Complete", "The voiceover scripts were exported to CSV (comma-separated values) files in " + voiceoverExportPath + ".", "OK");
             }
         }

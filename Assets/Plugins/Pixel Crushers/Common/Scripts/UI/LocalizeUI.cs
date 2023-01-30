@@ -1,4 +1,5 @@
-﻿// Copyright (c) Pixel Crushers. All rights reserved.
+// Recompile at 1/21/2023 3:18:05 PM
+// Copyright (c) Pixel Crushers. All rights reserved.
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -54,6 +55,12 @@ namespace PixelCrushers
             set { m_fieldNames = value; }
         }
 
+        private List<string> m_tmpFieldNames = new List<string>();
+        protected List<string> tmpFieldNames
+        {
+            get { return m_tmpFieldNames; }
+            set { m_tmpFieldNames = value; }
+        }
         private UnityEngine.UI.Text m_text = null;
         public UnityEngine.UI.Text text
         {
@@ -80,6 +87,12 @@ namespace PixelCrushers
         {
             get { return m_textMeshProUGUI; }
             set { m_textMeshProUGUI = value; }
+        }
+        private TMPro.TMP_Dropdown m_textMeshProDropdown;
+        public TMPro.TMP_Dropdown textMeshProDropdown
+        {
+            get { return m_textMeshProDropdown; }
+            set { m_textMeshProDropdown = value; }
         }
         private bool m_lookedForTMP = false;
 #endif
@@ -131,8 +144,10 @@ namespace PixelCrushers
                 m_lookedForTMP = true;
                 textMeshPro = GetComponent<TMPro.TextMeshPro>();
                 textMeshProUGUI = GetComponent<TMPro.TextMeshProUGUI>();
+                textMeshProDropdown = GetComponent<TMPro.TMP_Dropdown>();
             }
-            hasLocalizableComponent = hasLocalizableComponent || textMeshProUGUI != null;
+            hasLocalizableComponent = hasLocalizableComponent || textMeshPro != null ||
+                textMeshProUGUI != null || textMeshProDropdown != null;
 #endif
             if (!hasLocalizableComponent)
             {
@@ -145,8 +160,9 @@ namespace PixelCrushers
             {
                 fieldName = (text != null) ? text.text : string.Empty;
             }
-            if ((fieldNames.Count == 0) && (dropdown != null))
+            if ((dropdown != null) && (fieldNames.Count != dropdown.options.Count))
             {
+                fieldNames.Clear();
                 dropdown.options.ForEach(opt => fieldNames.Add(opt.text));
             }
 
@@ -219,6 +235,27 @@ namespace PixelCrushers
                 {
                     textMeshProUGUI.text = GetLocalizedText(fieldName);
                     if (localizedTextMeshProFont != null) textMeshProUGUI.font = localizedTextMeshProFont;
+                }
+            }
+            if (textMeshProDropdown != null)
+            {
+                if (tmpFieldNames.Count != textMeshProDropdown.options.Count)
+                {
+                    tmpFieldNames.Clear();
+                    textMeshProDropdown.options.ForEach(opt => tmpFieldNames.Add(opt.text));
+                }
+                for (int i = 0; i < textMeshProDropdown.options.Count; i++)
+                {
+                    if (i < tmpFieldNames.Count)
+                    {
+                        textMeshProDropdown.options[i].text = GetLocalizedText(tmpFieldNames[i]);
+                    }
+                }
+                textMeshProDropdown.captionText.text = GetLocalizedText(tmpFieldNames[textMeshProDropdown.value]);
+                if (localizedTextMeshProFont != null)
+                {
+                    textMeshProDropdown.captionText.font = localizedTextMeshProFont;
+                    textMeshProDropdown.itemText.font = localizedTextMeshProFont;
                 }
             }
 #endif

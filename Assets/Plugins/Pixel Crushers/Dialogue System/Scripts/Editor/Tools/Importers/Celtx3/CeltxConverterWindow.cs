@@ -42,12 +42,12 @@ namespace PixelCrushers.DialogueSystem
         {
             public string projectFilename = string.Empty;
             public string portraitFolder = string.Empty;
-            //public bool putEndSequenceOnLastSplit = true;
             public bool resetNodePositions = false;
             public string outputFolder = "Assets";
             public bool overwrite = false;
             public bool useCeltxFilename = true;
             public bool importGameplayScriptText;
+            public bool importGameplayAsEmptyNodes;
             public bool importBreakdownCatalogContent;
             public bool sortConversationTitles = false;
             public bool checkSequenceSyntax = true;
@@ -172,6 +172,9 @@ namespace PixelCrushers.DialogueSystem
             // Import Breakdown content:
             prefs.importBreakdownCatalogContent = EditorGUILayout.Toggle(new GUIContent("Import Breakdown Items", "Import breakdown and mult-tag breakdown items as custom fields."), prefs.importBreakdownCatalogContent);
 
+            // Import Gameplay content:
+            prefs.importGameplayAsEmptyNodes = EditorGUILayout.Toggle(new GUIContent("Import Gameplay As Empty Nodes", "When a Gameplay section doesn't start with [SEQ], [COND], or [SCRIPT], import it as a separate empty node instead of ignoring it."), prefs.importGameplayAsEmptyNodes);
+
             // Save To:
             if (string.IsNullOrEmpty(prefs.outputFolder))
             {
@@ -293,7 +296,7 @@ namespace PixelCrushers.DialogueSystem
                     else
                     {
                         CeltxGem3ToDialogueDatabase celtxProcessor = new CeltxGem3ToDialogueDatabase();
-                        celtxProcessor.ProcessCeltxGem3DataObject(celtxDataObject, database, prefs.importGameplayScriptText, prefs.importBreakdownCatalogContent, prefs.checkSequenceSyntax);
+                        celtxProcessor.ProcessCeltxGem3DataObject(celtxDataObject, database, prefs.importGameplayAsEmptyNodes, prefs.importGameplayScriptText, prefs.importBreakdownCatalogContent, prefs.checkSequenceSyntax);
                         database.actors.ForEach(a => FindPortraitTexture(a));
                         if (prefs.sortConversationTitles) database.conversations.Sort((x, y) => x.Title.CompareTo(y.Title));
                         SaveDatabase(database, databaseAssetName);

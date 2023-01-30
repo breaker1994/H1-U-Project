@@ -528,8 +528,15 @@ namespace PixelCrushers.DialogueSystem
             return (characterType == CharacterType.NPC) ? entry.subtitleText : entry.responseButtonText;
         }
 
-        private void SetParticipants(Conversation conversation, Transform actor, Transform conversant)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conversation"></param>
+        /// <param name="actor"></param>
+        /// <param name="conversant"></param>
+        public void SetParticipants(Conversation conversation, Transform actor, Transform conversant)
         {
+            m_characterInfoCache.Clear();
             m_actorInfo = GetCharacterInfo(conversation.ActorID, actor);
             m_conversantInfo = GetCharacterInfo(conversation.ConversantID, conversant);
             DialogueLua.SetParticipants(m_actorInfo.Name, m_conversantInfo.Name, m_actorInfo.nameInDatabase, m_conversantInfo.nameInDatabase);

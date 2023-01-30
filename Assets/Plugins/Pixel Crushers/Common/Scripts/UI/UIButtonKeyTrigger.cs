@@ -24,7 +24,7 @@ namespace PixelCrushers
         [Tooltip("Trigger if any key, input button, or mouse button is pressed.")]
         public bool anyKeyOrButton = false;
 
-        [Tooltip("Ignore trigger key/button if UI button is being clicked Event System's Submit input. Prevents unintentional double clicks.")]
+        [Tooltip("Ignore trigger key/button if UI button is being clicked Event System's Submit input. Prevents unintentional double clicks. For this checkbox to work, you must set the Input Device Manager component's Submit input to the same inputs as the EventSystem's Submit.")]
         public bool skipIfBeingClickedBySubmit = true;
 
         [Tooltip("Visually show UI Button in pressed state when triggered.")]

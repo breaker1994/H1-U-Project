@@ -79,7 +79,8 @@ namespace PixelCrushers.DialogueSystem
         {
             if (database == null) return 0;
             if (!isOpen) return EditorGUIUtility.singleLineHeight;
-            return 4 + ((3 + conditionItems.Count) * (EditorGUIUtility.singleLineHeight + 2f));
+            var height = Mathf.Max(3, conditionItems.Count + 3) * (EditorGUIUtility.singleLineHeight + 2f);
+            return height;
         }
 
         public string Draw(GUIContent guiContent, string luaCode, bool showOpenCloseButton = true)

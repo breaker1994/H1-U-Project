@@ -23,6 +23,9 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         [SerializeField]
         private string itemFilter = string.Empty;
 
+        [SerializeField]
+        private bool hideFilteredOutItems = false;
+
         private bool needToBuildLanguageListFromItems = true;
 
         private ReorderableList itemReorderableList = null;
@@ -74,7 +77,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             {
                 if (needToBuildLanguageListFromItems) BuildLanguageListFromItems();
                 if (itemReorderableList == null) InitializeItemReorderableList();
-                DrawFilterMenuBar("Quests/Item", DrawItemMenu, ref itemFilter);
+                DrawFilterMenuBar("Quests/Item", DrawItemMenu, ref itemFilter, ref hideFilteredOutItems);
                 if (database.syncInfo.syncItems)
                 {
                     DrawItemSyncDatabase();
@@ -85,7 +88,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             else
             {
                 if (itemReorderableList == null) InitializeItemReorderableList();
-                DrawFilterMenuBar("Item", DrawItemMenu, ref itemFilter);
+                DrawFilterMenuBar("Item", DrawItemMenu, ref itemFilter, ref hideFilteredOutItems);
                 if (database.syncInfo.syncItems) DrawItemSyncDatabase();
                 itemReorderableList.DoLayoutList();
             }

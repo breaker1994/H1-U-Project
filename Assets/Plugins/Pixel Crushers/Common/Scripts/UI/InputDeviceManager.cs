@@ -423,7 +423,7 @@ namespace PixelCrushers
 
         private IEnumerator ForceCursorAfterOneFrameCoroutine(bool visible)
         {
-            yield return new WaitForEndOfFrame();
+            yield return CoroutineUtility.endOfFrame;
             Cursor.visible = visible;
             Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
         }

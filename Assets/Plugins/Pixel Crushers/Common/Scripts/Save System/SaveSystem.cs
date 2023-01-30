@@ -66,8 +66,6 @@ namespace PixelCrushers
 
         private static int m_framesToWaitBeforeSaveDataAppliedEvent = 0;
 
-        private static WaitForEndOfFrame endOfFrame = new WaitForEndOfFrame();
-
         private static bool m_isQuitting = false;
 
 #if UNITY_2019_3_OR_NEWER && UNITY_EDITOR
@@ -86,7 +84,6 @@ namespace PixelCrushers
             m_addedScenes = new List<string>();
             m_currentAsyncOperation = null;
             m_framesToWaitBeforeSaveDataAppliedEvent = 0;
-            endOfFrame = new WaitForEndOfFrame();
             m_isQuitting = false;
         }
 #endif
@@ -763,7 +760,7 @@ namespace PixelCrushers
             {
                 yield return null;
             }
-            yield return endOfFrame;
+            yield return CoroutineUtility.endOfFrame;
             saveDataApplied();
         }
 
@@ -864,7 +861,7 @@ namespace PixelCrushers
             {
                 yield return null;
             }
-            yield return endOfFrame;
+            yield return CoroutineUtility.endOfFrame;
             m_playerSpawnpoint = !string.IsNullOrEmpty(spawnpointName) ? GameObject.Find(spawnpointName) : null;
             if (!string.IsNullOrEmpty(spawnpointName) && m_playerSpawnpoint == null) Debug.LogWarning("Save System: Can't find spawnpoint '" + spawnpointName + "'. Is spelling and capitalization correct?");
             ApplySavedGameData(savedGameData);

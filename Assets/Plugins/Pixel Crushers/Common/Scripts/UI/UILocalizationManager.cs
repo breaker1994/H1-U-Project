@@ -157,7 +157,7 @@ namespace PixelCrushers
 
         private IEnumerator Start()
         {
-            yield return new WaitForEndOfFrame(); // Wait for Text components to start.
+            yield return CoroutineUtility.endOfFrame; // Wait for Text components to start.
             UpdateUIs(currentLanguage);
         }
 

@@ -101,7 +101,7 @@ namespace PixelCrushers.DialogueSystem
         static System.Collections.IEnumerator RegisterLuaFunctionsAfterFrame()
         {
             isRegistering = true;
-            yield return new WaitForEndOfFrame();
+            yield return CoroutineUtility.endOfFrame;
             RegisterLuaFunctions();
             isRegistering = false;
             if (hasCachedParticipants)

@@ -389,7 +389,14 @@ namespace PixelCrushers.DialogueSystem
             if (prefs.overwrite)
             {
                 database = AssetDatabase.LoadAssetAtPath(assetPath, typeof(DialogueDatabase)) as DialogueDatabase;
-                if ((database != null) && !prefs.merge) database.Clear();
+                if (database != null)
+                {
+                    if (!prefs.merge)
+                    {
+                        database.Clear();
+                    }
+                    database.SyncAll();
+                }
             }
             if (database == null)
             {

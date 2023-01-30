@@ -110,6 +110,7 @@ namespace PixelCrushers.DialogueSystem
 
         public override void Awake()
         {
+            base.Awake();
             control = GetComponent<UnityEngine.UI.Text>();
             if (removeDuplicateTypewriterEffects) RemoveIfDuplicate();
             if (audioSource == null) audioSource = GetComponent<AudioSource>();
