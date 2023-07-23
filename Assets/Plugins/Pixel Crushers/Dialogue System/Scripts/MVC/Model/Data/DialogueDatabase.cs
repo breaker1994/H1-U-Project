@@ -154,7 +154,7 @@ namespace PixelCrushers.DialogueSystem
         }
 
         /// <summary>
-        /// Gets the type of the character (PC or NPC) of an actor.
+        /// Gets the type of the character (PC or NPC) of an actor based on the actor's IsPlayer value.
         /// </summary>
         /// <returns>
         /// The character type (PC or NPC)
@@ -162,10 +162,6 @@ namespace PixelCrushers.DialogueSystem
         /// <param name='actorID'>
         /// The Actor ID to check.
         /// </param>
-        /// <remarks>
-        /// The comparison is based on the value of playerID, not the actor's IsPlayer field. If more than one actor's
-        /// IsPlayer field is true, this will only identify the first one.
-        /// </remarks>
         public CharacterType GetCharacterType(int actorID)
         {
             return IsPlayerID(actorID) ? CharacterType.PC : CharacterType.NPC;
@@ -654,11 +650,11 @@ namespace PixelCrushers.DialogueSystem
                     {
                         var oldLuaIndex = kvp.Key;
                         var newLuaIndex = kvp.Value;
-                        if (entry.conditionsString.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.conditionsString) && entry.conditionsString.Contains(oldLuaIndex))
                         {
                             entry.conditionsString = ReplaceLuaIndex(entry.conditionsString, "Actor", oldLuaIndex, newLuaIndex);
                         }
-                        if (entry.userScript.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.userScript) && entry.userScript.Contains(oldLuaIndex))
                         {
                             entry.userScript = ReplaceLuaIndex(entry.userScript, "Actor", oldLuaIndex, newLuaIndex);
                         }
@@ -702,11 +698,11 @@ namespace PixelCrushers.DialogueSystem
                     {
                         var oldLuaIndex = kvp.Key;
                         var newLuaIndex = kvp.Value;
-                        if (entry.conditionsString.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.conditionsString) && entry.conditionsString.Contains(oldLuaIndex))
                         {
                             entry.conditionsString = ReplaceLuaIndex(entry.conditionsString, "Item", oldLuaIndex, newLuaIndex);
                         }
-                        if (entry.userScript.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.userScript) && entry.userScript.Contains(oldLuaIndex))
                         {
                             entry.userScript = ReplaceLuaIndex(entry.userScript, "Item", oldLuaIndex, newLuaIndex);
                         }
@@ -750,11 +746,11 @@ namespace PixelCrushers.DialogueSystem
                     {
                         var oldLuaIndex = kvp.Key;
                         var newLuaIndex = kvp.Value;
-                        if (entry.conditionsString.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.conditionsString) && entry.conditionsString.Contains(oldLuaIndex))
                         {
                             entry.conditionsString = ReplaceLuaIndex(entry.conditionsString, "Location", oldLuaIndex, newLuaIndex);
                         }
-                        if (entry.userScript.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.userScript) && entry.userScript.Contains(oldLuaIndex))
                         {
                             entry.userScript = ReplaceLuaIndex(entry.userScript, "Location", oldLuaIndex, newLuaIndex);
                         }
@@ -798,11 +794,11 @@ namespace PixelCrushers.DialogueSystem
                     {
                         var oldLuaIndex = kvp.Key;
                         var newLuaIndex = kvp.Value;
-                        if (entry.conditionsString.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.conditionsString) && entry.conditionsString.Contains(oldLuaIndex))
                         {
                             entry.conditionsString = ReplaceLuaIndex(entry.conditionsString, "Variable", oldLuaIndex, newLuaIndex);
                         }
-                        if (entry.userScript.Contains(oldLuaIndex))
+                        if (!string.IsNullOrEmpty(entry.userScript) && entry.userScript.Contains(oldLuaIndex))
                         {
                             entry.userScript = ReplaceLuaIndex(entry.userScript, "Variable", oldLuaIndex, newLuaIndex);
                         }

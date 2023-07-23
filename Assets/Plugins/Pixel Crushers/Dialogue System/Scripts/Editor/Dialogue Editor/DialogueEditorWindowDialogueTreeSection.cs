@@ -63,6 +63,8 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
 
         public static bool linkToDebug = false;
 
+        private bool allowEditStartEntry = false;
+
         private DialogueEntry _currentEntry = null;
         [SerializeField]
         private int currentEntryID = -1;
@@ -118,6 +120,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             ResetDialogueTree();
             currentEntry = null;
             ResetLuaWizards();
+            allowEditStartEntry = false;
         }
 
         private void ResetDialogueEntryText()
@@ -231,6 +234,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
 
         private void BuildLanguageListFromConversation()
         {
+            languages.Clear();
             for (int i = 0; i < currentConversation.dialogueEntries.Count; i++)
             {
                 var entry = currentConversation.dialogueEntries[i];
@@ -342,7 +346,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         private string BuildDialogueEntryNodeText(DialogueEntry entry)
         {
             var text = string.Empty;
-            if (showTitlesInsteadOfText)
+            if (prefs.showTitlesInsteadOfText)
             {
                 var title = entry.Title;
                 if (!(string.IsNullOrEmpty(title) || string.Equals(title, "New Dialogue Entry"))) text = title;
@@ -353,17 +357,17 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             if (entry.isGroup) text = "{group} " + text;
             if (text.Contains("\n")) text = text.Replace("\n", string.Empty);
             int extraLength = 0;
-            if (showAllActorNames)
+            if (prefs.showAllActorNames)
             {
                 string actorName = GetActorNameByID(entry.ActorID);
                 if (actorName != null) extraLength = actorName.Length;
                 text = string.Format("{0}:\n{1}", actorName, text);
             }
-            else if (showOtherActorNames && entry.ActorID != currentConversation.ActorID && (entry.ActorID != currentConversation.ConversantID))
+            else if (prefs.showOtherActorNames && entry.ActorID != currentConversation.ActorID && (entry.ActorID != currentConversation.ConversantID))
             {
                 text = string.Format("{0}: {1}", GetActorNameByID(entry.ActorID), text);
             }
-            if (showNodeIDs)
+            if (prefs.showNodeIDs)
             {
                 text = "[" + entry.id + "] " + text;
             }
@@ -615,6 +619,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
         {
             if (currentEntry == null) return false;
 
+            bool changed = false;
             EditorGUI.BeginChangeCheck();
 
             DialogueEntry entry = currentEntry;
@@ -632,6 +637,13 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             if (isStartEntry)
             {
                 EditorGUILayout.HelpBox("This is the START entry. In most cases, you should leave this entry alone and begin your conversation with its child entries.", MessageType.Warning);
+                if (!allowEditStartEntry)
+                {
+                    if (GUILayout.Button("I understand. Edit anyway."))
+                    {
+                        allowEditStartEntry = true;
+                    }
+                }
             }
 
             // Description:
@@ -643,12 +655,15 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 description.value = EditorGUILayout.TextArea(description.value);
                 if (EditorGUI.EndChangeCheck())
                 {
+                    changed = true;
                     ResetDialogueEntryNodeDescription(entry);
                 }
             }
 
             // Actor & conversant:
             DrawDialogueEntryParticipants(entry);
+
+            EditorGUI.BeginDisabledGroup(isStartEntry && !allowEditStartEntry);
 
             // Is this a group or regular entry:
             entry.isGroup = EditorGUILayout.Toggle(new GUIContent("Group", "Tick to organize children as a group."), entry.isGroup);
@@ -660,21 +675,32 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 EditorGUI.BeginChangeCheck();
 
                 // Menu text (including localized if defined in template):
-                var menuText = entry.MenuText;
+                var menuTextField = Field.Lookup(entry.fields, "Menu Text");
+                if (menuTextField == null)
+                {
+                    menuTextField = new Field("Menu Text", "", FieldType.Text);
+                    entry.fields.Add(menuTextField);
+                }
+                var menuText = menuTextField.value;
                 var menuTextLabel = string.IsNullOrEmpty(menuText) ? "Menu Text" : ("Menu Text (" + menuText.Length + " chars)");
-                EditorGUILayout.LabelField(new GUIContent(menuTextLabel, "Response menu text (e.g., short paraphrase). If blank, uses Dialogue Text"));
-                entry.MenuText = EditorGUILayout.TextArea(menuText);
-                DrawLocalizedVersions(entry.fields, "Menu Text {0}", false, FieldType.Text);
+                DrawRevisableTextAreaField(new GUIContent(menuTextLabel, "Response menu text (e.g., short paraphrase). If blank, uses Dialogue Text."), null, currentEntry, menuTextField);
+                DrawLocalizedVersions(entry, entry.fields, "Menu Text {0}", false, FieldType.Text);
 
                 // Dialogue text (including localized):
-                var dialogueText = entry.DialogueText;
+                var dialogueTextField = Field.Lookup(entry.fields, "Dialogue Text");
+                if (dialogueTextField == null)
+                {
+                    dialogueTextField = new Field("Dialogue Text", "", FieldType.Text);
+                    entry.fields.Add(dialogueTextField);
+                }
+                var dialogueText = dialogueTextField.value;
                 var dialogueTextLabel = string.IsNullOrEmpty(dialogueText) ? "Dialogue Text" : ("Dialogue Text (" + dialogueText.Length + " chars)");
-                EditorGUILayout.LabelField(new GUIContent(dialogueTextLabel, "Line spoken by actor. If blank, uses Menu Text."));
-                entry.DialogueText = EditorGUILayout.TextArea(dialogueText);
-                DrawLocalizedVersions(entry.fields, "{0}", true, FieldType.Localization);
+                DrawRevisableTextAreaField(new GUIContent(dialogueTextLabel, "Line spoken by actor. If blank, uses Menu Text."), null, currentEntry, dialogueTextField);
+                DrawLocalizedVersions(entry, entry.fields, "{0}", true, FieldType.Localization);
 
                 if (EditorGUI.EndChangeCheck())
                 {
+                    changed = true;
                     if (string.Equals(entry.Title, "New Dialogue Entry")) entry.Title = string.Empty;
                 }
 
@@ -683,15 +709,15 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 // Sequence (including localized if defined):
                 EditorWindowTools.EditorGUILayoutBeginGroup();
 
-                var sequence = entry.Sequence;
+                var sequenceField = Field.Lookup(entry.fields, "Sequence");
                 EditorGUI.BeginChangeCheck();
-                sequence = SequenceEditorTools.DrawLayout(new GUIContent("Sequence", "Cutscene played when speaking this entry. If set, overrides Dialogue Manager's Default Sequence. Drag audio clips to add AudioWait() commands."), entry.Sequence, ref sequenceRect, ref sequenceSyntaxState);
+                sequenceField.value = SequenceEditorTools.DrawLayout(new GUIContent("Sequence", "Cutscene played when speaking this entry. If set, overrides Dialogue Manager's Default Sequence. Drag audio clips to add AudioWait() commands."), sequenceField.value, ref sequenceRect, ref sequenceSyntaxState, entry, sequenceField);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    entry.Sequence = sequence;
-                    dialogueEntryNodeHasSequence[entry.id] = !string.IsNullOrEmpty(sequence);
+                    changed = true;
+                    dialogueEntryNodeHasSequence[entry.id] = !string.IsNullOrEmpty(sequenceField.value);
                 }
-                DrawLocalizedVersions(entry.fields, "Sequence {0}", false, FieldType.Text, true);
+                DrawLocalizedVersions(entry, entry.fields, "Sequence {0}", false, FieldType.Text, true);
 
                 // Response Menu Sequence:
                 bool hasResponseMenuSequence = entry.HasResponseMenuSequence();
@@ -699,7 +725,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
                 {
                     EditorGUILayout.LabelField(new GUIContent("Response Menu Sequence", "Cutscene played during response menu following this entry."));
                     entry.ResponseMenuSequence = EditorGUILayout.TextArea(entry.ResponseMenuSequence);
-                    DrawLocalizedVersions(entry.fields, "Response Menu Sequence {0}", false, FieldType.Text);
+                    DrawLocalizedVersions(entry, entry.fields, "Response Menu Sequence {0}", false, FieldType.Text);
                 }
                 else
                 {
@@ -746,7 +772,7 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             }
 
             // All Fields foldout:
-            bool changed = EditorGUI.EndChangeCheck();
+            changed = EditorGUI.EndChangeCheck() || changed;
             try
             {
                 EditorGUI.BeginChangeCheck();
@@ -781,6 +807,9 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
             {
                 changed = EditorGUI.EndChangeCheck() || changed;
             }
+
+            EditorGUI.EndDisabledGroup();
+
             if (changed)
             {
                 BuildLanguageListFromFields(entry.fields);

@@ -14,7 +14,7 @@ namespace PixelCrushers
         /// <param name="message">If needing to add an EventSystem, show this message.</param>
         public static void RequireEventSystem(string message = null)
         {
-            var eventSystem = GameObject.FindObjectOfType<UnityEngine.EventSystems.EventSystem>();
+            var eventSystem = GameObjectUtility.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>();
             if (eventSystem == null)
             {
                 if (message != null) Debug.LogWarning(message);
@@ -55,6 +55,13 @@ namespace PixelCrushers
                 selectable.Select();
                 selectable.OnSelect(null);
             }
+        }
+
+        public static Font GetDefaultFont()
+        {
+            var majorVersion = SafeConvert.ToInt(Application.unityVersion.Split('.')[0]);
+            var fontName = (majorVersion >= 2022) ? "LegacyRuntime.ttf" : "Arial.ttf";
+            return Resources.GetBuiltinResource<Font>(fontName);
         }
 
     }

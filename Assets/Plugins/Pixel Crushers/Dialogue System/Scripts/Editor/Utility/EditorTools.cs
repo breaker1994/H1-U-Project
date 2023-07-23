@@ -53,7 +53,7 @@ namespace PixelCrushers.DialogueSystem
             return GetPopupWidth(new GUIContent(text));
         }
         public static GUILayoutOption GUILayoutPopupWidth(object obj)
-        {            
+        {
             return GUILayout.Width(GetPopupWidth(new GUIContent(obj.ToString())));
         }
 
@@ -92,7 +92,7 @@ namespace PixelCrushers.DialogueSystem
 
         public static DialogueDatabase FindInitialDatabase()
         {
-            var dialogueSystemController = Object.FindObjectOfType<DialogueSystemController>();
+            var dialogueSystemController = GameObjectUtility.FindFirstObjectByType<DialogueSystemController>();
             return (dialogueSystemController == null) ? null : dialogueSystemController.initialDatabase;
         }
 
@@ -219,6 +219,18 @@ namespace PixelCrushers.DialogueSystem
             if (asset == null || string.IsNullOrEmpty(filter)) return true;
             var assetName = asset.Name;
             return string.IsNullOrEmpty(assetName) ? false : (assetName.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static string[] imageExtensions = { ".png", ".tga", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".psd", ".psb", ".gif", ".pict" };
+
+        public static Sprite TryLoadSprite(string assetPath)
+        {
+            foreach (var ext in imageExtensions)
+            {
+                Sprite sprite = AssetDatabase.LoadAssetAtPath(assetPath + ext, typeof(Sprite)) as Sprite;
+                if (sprite != null) return sprite;
+            }
+            return null;
         }
 
     }
